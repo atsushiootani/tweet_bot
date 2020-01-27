@@ -60,11 +60,11 @@ func main() {
 		tweetAtDate, err := tweet.DateFormat(tweetAtString)
 
 		if err == nil {
-			tweet := tweet.Get(id)
-			tweet.Text = text
-			tweet.Status = status
-			tweet.TweetAt = tweetAtDate
-			tweet.Save()
+			tw := tweet.Get(id)
+			tw.Text = text
+			tw.Status = tweet.GetStatus(status)
+			tw.TweetAt = tweetAtDate
+			tw.Save()
 			ctx.Redirect(302, "/")
 		} else{
 			ctx.Redirect(400, "/")

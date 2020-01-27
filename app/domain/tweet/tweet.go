@@ -12,14 +12,34 @@ import (
 type Tweet struct {
 	gorm.Model // TODO: ドメイン層としては外したい
 	Text   string // 文面
-	Status string // 投稿したか
+	Status Status // 投稿したか
 	TweetAt time.Time // 投稿する日時
+}
+
+type Status string
+const(
+	New Status = "New"
+	Done Status = "Done"
+	Failed Status = "Failed"
+)
+
+func GetStatus(str string) Status{
+	s := (string)(New)
+	fmt.Print(s)
+	switch str {
+	case "New":
+		return New
+	case "Done":
+		return Done
+	default:
+		return Failed
+	}
 }
 
 func Create(text string, tweetAt time.Time) *Tweet{
 	result := Tweet{
 		Text: text,
-		Status: "New",
+		Status: New,
 		TweetAt: tweetAt,
 	}
 
@@ -93,10 +113,10 @@ func (tweet *Tweet) Save() bool{
 // ツイート実行
 func (tweet *Tweet) DoTweet() bool {
 	fmt.Println(tweet.Text)
-	tweet.Status = "Done"
+	tweet.Status = Done
 	return true
 }
 
 func (tweet *Tweet) HasTweeted() bool {
-	return tweet.Status != "Done"
+	return tweet.Status != Done
 }
