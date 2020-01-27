@@ -15,18 +15,13 @@
     <p>内容<input type="text" name="text" size="30" value="{{.tweet.Text}}" ></p>
     <p>状態
         <select name="status">
-            {{if eq .tweet.Status "New"}}
-                <option value="New" selected>New</option>
-                <option value="Done">Done</option>
-                <option value="Failed">Failed</option>
-            {{else if eq .tweet.Status "Done"}}
-                <option value="New">New</option>
-                <option value="Done" selected>Done</option>
-                <option value="Failed">Failed</option>
-            {{else}}
-                <option value="New">New</option>
-                <option value="Done">Done</option>
-                <option value="Failed" selected>Failed</option>
+            {{$status := .tweet.Status}}
+            {{range .Statuses}}
+                {{if eq . $status}}
+                    <option value={{.}} selected>{{.}}</option>
+                {{else}}
+                    <option value={{.}}>{{.}}</option>
+                {{end}}
             {{end}}
         </select>
     </p>

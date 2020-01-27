@@ -23,17 +23,22 @@ const(
 	Failed Status = "Failed"
 )
 
-func GetStatus(str string) Status{
-	s := (string)(New)
-	fmt.Print(s)
-	switch str {
-	case "New":
-		return New
-	case "Done":
-		return Done
-	default:
-		return Failed
-	}
+var Statuses = map[string]Status{
+	"New": New,
+	"Done": Done,
+	"Failed": Failed,
+}
+
+var OrderedStatuses = []Status{
+	New, Done, Failed,
+}
+
+func StringToStatus(str string) Status{
+	return Statuses[str]
+}
+
+func StatusToString(status Status) string{
+	return string(status)
 }
 
 func Create(text string, tweetAt time.Time) *Tweet{

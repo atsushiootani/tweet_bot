@@ -45,7 +45,7 @@ func main() {
 			panic(err)
 		}
 		t := tweet.Get(id)
-		ctx.HTML(200, "detail.html", gin.H{"tweet": t})
+		ctx.HTML(200, "detail.html", gin.H{"tweet": t, "Statuses": tweet.OrderedStatuses})
 	})
 
 	router.POST("/update/:id", func(ctx *gin.Context) {
@@ -62,7 +62,7 @@ func main() {
 		if err == nil {
 			tw := tweet.Get(id)
 			tw.Text = text
-			tw.Status = tweet.GetStatus(status)
+			tw.Status = tweet.StringToStatus(status)
 			tw.TweetAt = tweetAtDate
 			tw.Save()
 			ctx.Redirect(302, "/")
