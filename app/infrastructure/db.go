@@ -3,15 +3,7 @@ package infrastructure
 import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/mattn/go-sqlite3"
-	"time"
 )
-
-type Tweet struct {
-	gorm.Model
-	Text   string // 文面
-	Status string // 投稿したか
-	TweetAt time.Time // 投稿する日時
-}
 
 func dbOpenConnection() *gorm.DB {
 	db, err := gorm.Open("sqlite3", "db/test.sqlite3")
@@ -21,55 +13,49 @@ func dbOpenConnection() *gorm.DB {
 	return db
 }
 
+func DbOpenConnection() *gorm.DB {
+	return dbOpenConnection()
+}
+
 func DbInit() {
 	db := dbOpenConnection()
 	defer db.Close()
 
-	db.AutoMigrate(&Tweet{})
+	// db.AutoMigrate(&Tweet{})
 }
 
-func DbInsert(text string, status string, tweetAt time.Time) {
+func DbCreate(record interface{}) {
 	db := dbOpenConnection()
 	defer db.Close()
 
-	db.Create(&Tweet{Text: text, Status: status, TweetAt: tweetAt})
+	db.Create(record)
 }
 
-func DbUpdate(id int, text string, status string, tweetAt time.Time) {
+func DbSave(record interface{}) {
 	db := dbOpenConnection()
 	defer db.Close()
 
-	var tweet Tweet
-	db.First(&tweet, id)
-	tweet.Text = text
-	tweet.Status = status
-	tweet.TweetAt = tweetAt
-	db.Save(&tweet)
+	db.Save(record)
 }
 
-func DbDelete(id int) {
+func DbDelete(record interface{}) {
 	db := dbOpenConnection()
 	defer db.Close()
 
-	var tweet Tweet
-	db.First(&tweet, id)
-	db.Delete(&tweet)
+	db.Delete(record)
 }
 
-func DbGetAll() []Tweet {
+func DbFindAll(records []*gorm.Model) {
 	db := dbOpenConnection()
 	defer db.Close()
 
-	var tweets []Tweet
-	db.Order("created_at desc").Find(&tweets)
-	return tweets
+	db.Find(&records)
 }
 
-func DbGetOne(id int) Tweet {
+func DbFind(id int) (record *gorm.DB) {
 	db := dbOpenConnection()
 	defer db.Close()
 
-	var tweet Tweet
-	db.First(&tweet, id)
-	return tweet
+	db.First(&record, id)
+	return
 }

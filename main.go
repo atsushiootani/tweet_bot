@@ -1,6 +1,7 @@
 package main
 
 import (
+	"./app/domain/tweet"
 	"./app/infrastructure"
 	"github.com/gin-gonic/gin"
 	"strconv"
@@ -8,40 +9,40 @@ import (
 )
 
 func main() {
-	infrastructure.DbInit()
+	// infrastructure.DbInit()
+	db := infrastructure.DbOpenConnection()
+	defer db.Close()
+	db.AutoMigrate(&tweet.Tweet{})
+
 
 	router := gin.Default()
 	router.LoadHTMLGlob("templates/*.html")
 
-	//Index
 	router.GET("/", func(ctx *gin.Context) {
-		tweets := infrastructure.DbGetAll()
+		tweets := tweet.All()
 		ctx.HTML(200, "index.html", gin.H{
 			"tweets": tweets,
 		})
 	})
 
-	//Create
 	router.POST("/new", func(ctx *gin.Context) {
 		text := ctx.PostForm("text")
-		status := ctx.PostForm("status")
+		// status := ctx.PostForm("status")
 		// tweetAt := ctx.PostForm("tweetAt") // TODO
-		infrastructure.DbInsert(text, status, time.Now())
+		tweet.Create(text, time.Now())
 		ctx.Redirect(302, "/")
 	})
 
-	//Detail
 	router.GET("/detail/:id", func(ctx *gin.Context) {
 		n := ctx.Param("id")
 		id, err := strconv.Atoi(n)
 		if err != nil {
 			panic(err)
 		}
-		tweet := infrastructure.DbGetOne(id)
-		ctx.HTML(200, "detail.html", gin.H{"tweet": tweet})
+		t := tweet.Get(id)
+		ctx.HTML(200, "detail.html", gin.H{"tweet": t})
 	})
 
-	//Update
 	router.POST("/update/:id", func(ctx *gin.Context) {
 		n := ctx.Param("id")
 		id, err := strconv.Atoi(n)
@@ -51,33 +52,33 @@ func main() {
 		text := ctx.PostForm("text")
 		status := ctx.PostForm("status")
 		// tweetAt := ctx.PostForm("tweetAt") //TODO
-		infrastructure.DbUpdate(id, text, status, time.Now())
+		tweet := tweet.Get(id)
+		tweet.Text = text
+		tweet.Status = status
+		tweet.TweetAt = time.Now()
+		tweet.Save()
 		ctx.Redirect(302, "/")
 	})
 
-	//削除確認
 	router.GET("/delete_check/:id", func(ctx *gin.Context) {
 		n := ctx.Param("id")
 		id, err := strconv.Atoi(n)
 		if err != nil {
 			panic("ERROR")
 		}
-		tweet := infrastructure.DbGetOne(id)
-		ctx.HTML(200, "delete.html", gin.H{"tweet": tweet})
+		tw := tweet.Get(id)
+		ctx.HTML(200, "delete.html", gin.H{"tweet": tw})
 	})
 
-	//Delete
 	router.POST("/delete/:id", func(ctx *gin.Context) {
 		n := ctx.Param("id")
 		id, err := strconv.Atoi(n)
 		if err != nil {
 			panic("ERROR")
 		}
-		infrastructure.DbDelete(id)
+		tweet.Delete(id)
 		ctx.Redirect(302, "/")
-
 	})
 
 	router.Run()
-
 }
