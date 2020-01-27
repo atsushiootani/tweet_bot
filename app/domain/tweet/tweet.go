@@ -3,6 +3,7 @@ package tweet
 import (
 	"../../infrastructure"
 	"fmt"
+	"github.com/Songmu/go-httpdate"
 	"github.com/jinzhu/gorm"
 	"time"
 	"unicode/utf8"
@@ -49,8 +50,39 @@ func Get(id int) *Tweet {
 	return &result
 }
 
+const dateFormat = "2006/01/02 15:04:05"
+var jst *time.Location
+
+func getJst() *time.Location {
+	if jst == nil {
+		localJst, err := time.LoadLocation("Asia/Tokyo")
+		if err != nil {
+			panic("failed to load location 'Asia/Tokyo'")
+		}
+		jst = localJst
+	}
+	return jst
+}
+
+func DateFormat(dateString string) (time.Time, error) {
+	time, err := httpdate.Str2Time(dateString, getJst())
+	return time, err
+}
+
 func (tweet *Tweet) TextLength() int{
 	return utf8.RuneCountInString(tweet.Text)
+}
+
+func (tweet *Tweet) SetDate(dateString string) error{
+	t, err := DateFormat(dateString)
+	if err != nil {
+		tweet.TweetAt = t
+	}
+	return err
+}
+
+func (tweet *Tweet) TweetAtString() string{
+	return tweet.TweetAt.Format(dateFormat)
 }
 
 func (tweet *Tweet) Save() bool{

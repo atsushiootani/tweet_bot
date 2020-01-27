@@ -5,7 +5,6 @@ import (
 	"./app/infrastructure"
 	"github.com/gin-gonic/gin"
 	"strconv"
-	"time"
 )
 
 func main() {
@@ -27,10 +26,16 @@ func main() {
 
 	router.POST("/new", func(ctx *gin.Context) {
 		text := ctx.PostForm("text")
-		// status := ctx.PostForm("status")
-		// tweetAt := ctx.PostForm("tweetAt") // TODO
-		tweet.Create(text, time.Now())
-		ctx.Redirect(302, "/")
+
+		tweetAtString := ctx.PostForm("tweetAt")
+		tweetAtTime, err := tweet.DateFormat(tweetAtString)
+
+		if err == nil {
+			tweet.Create(text, tweetAtTime)
+			ctx.Redirect(302, "/")
+		} else{
+			ctx.Status(400)
+		}
 	})
 
 	router.GET("/detail/:id", func(ctx *gin.Context) {
@@ -51,13 +56,19 @@ func main() {
 		}
 		text := ctx.PostForm("text")
 		status := ctx.PostForm("status")
-		// tweetAt := ctx.PostForm("tweetAt") //TODO
-		tweet := tweet.Get(id)
-		tweet.Text = text
-		tweet.Status = status
-		tweet.TweetAt = time.Now()
-		tweet.Save()
-		ctx.Redirect(302, "/")
+		tweetAtString := ctx.PostForm("tweetAt")
+		tweetAtDate, err := tweet.DateFormat(tweetAtString)
+
+		if err == nil {
+			tweet := tweet.Get(id)
+			tweet.Text = text
+			tweet.Status = status
+			tweet.TweetAt = tweetAtDate
+			tweet.Save()
+			ctx.Redirect(302, "/")
+		} else{
+			ctx.Redirect(400, "/")
+		}
 	})
 
 	router.GET("/delete_check/:id", func(ctx *gin.Context) {

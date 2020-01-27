@@ -2,9 +2,11 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>Sample App</title>
+<title>関ヶ原 bot</title>
 </head>
 <body>
+<h3>関ヶ原 bot<br/></h3>
+時刻はすべて JST です<br/>
 <h2>追加</h2>
 <form method="post" action="/new">
     <p>内容<input type="text" name="text" size="30" placeholder="入力してください" ></p>
@@ -14,7 +16,7 @@
             <option value="終了">終了</option>
         </select>
     </p>
-    <p>ツイートする日時: <input type="text" name="at" size="30" placeholder="2000/1/1 00:00:00" ></p>
+    <p>ツイートする日時: <input type="text" name="tweetAt" size="30" placeholder="2000/1/1 00:00:00" ></p>
     <p><input type="submit" value="Send"></p>
 </form>
 
@@ -22,7 +24,7 @@
     <table border="1">
         <tr><th>id</th><th>text</th><th>ツイート日時</th><th>status</th><th>編集</th><th>削除</th></tr>
         {{ range .tweets }}
-            <tr><td>{{.ID}}</td><td>{{.Text}}  ({{.TextLength}}文字)</td><td>{{.TweetAt}}</td><td>{{.Status}}</td>
+            <tr><td>{{.ID}}</td><td>{{.Text}}  ({{.TextLength}}文字)</td><td>{{.TweetAtString}}</td><td>{{.Status}}</td>
                 <td><label><a href="/detail/{{.ID}}">編集</a></label></td>
                 <td><label><a href="/delete_check/{{.ID}}">削除</a></label></td>
             </tr>
