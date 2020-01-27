@@ -19,12 +19,15 @@
 </form>
 
 <ul>
-    {{ range .tweets }}
-        <li>内容：{{ .Text }}、状態：{{ .Status }}、日時：{{ .TweetAt }}
-            <label><a href="/detail/{{.ID}}">編集</a></label>
-            <label><a href="/delete_check/{{.ID}}">削除</a></label>
-        </li>
-    {{end}}
+    <table border="1">
+        <tr><th>id</th><th>text</th><th>ツイート日時</th><th>status</th><th>編集</th><th>削除</th></tr>
+        {{ range .tweets }}
+            <tr><td>{{.ID}}</td><td>{{.Text}}  ({{.TextLength}}文字)</td><td>{{.TweetAt}}</td><td>{{.Status}}</td>
+                <td><label><a href="/detail/{{.ID}}">編集</a></label></td>
+                <td><label><a href="/delete_check/{{.ID}}">削除</a></label></td>
+            </tr>
+        {{end}}
+    </table>
 </ul>
 </body>
 </html>

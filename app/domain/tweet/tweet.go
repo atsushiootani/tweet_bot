@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"time"
+	"unicode/utf8"
 )
 
 type Tweet struct {
@@ -46,6 +47,10 @@ func Get(id int) *Tweet {
 	var result Tweet
 	db.First(&result, id)
 	return &result
+}
+
+func (tweet *Tweet) TextLength() int{
+	return utf8.RuneCountInString(tweet.Text)
 }
 
 func (tweet *Tweet) Save() bool{
