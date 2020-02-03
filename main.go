@@ -3,6 +3,7 @@ package main
 import (
 	"./app/domain/tweet"
 	"./app/infrastructure"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"time"
@@ -14,6 +15,8 @@ func main() {
 	defer db.Close()
 	db.AutoMigrate(&tweet.Tweet{})
 
+	// worker
+	go worker()
 
 	router := gin.Default()
 	router.LoadHTMLGlob("templates/*.html")
@@ -101,4 +104,17 @@ func main() {
 	})
 
 	router.Run()
+}
+
+// 定時ワーカー
+const workerInterval = 10 * time.Second
+
+func worker() {
+	for {
+		fmt.Println("worker process at ", time.Now().Format(time.RFC3339))
+
+		tweet.TweetNowAll(time.Now())
+
+		time.Sleep(workerInterval)
+	}
 }
