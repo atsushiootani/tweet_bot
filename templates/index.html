@@ -26,7 +26,6 @@
 </table>
 
 <h2>今からツイートするもの</h2>
-
 {{ if gt .needsToTweetsCount 0 }}
     <table border="1">
         <tr><th>id</th><th>text</th><th>ツイート日時</th><th>status</th><th>編集</th><th>削除</th></tr>
@@ -42,6 +41,18 @@
     </form>
 {{ else }}
     今ツイートできるものはありません
+{{ end }}
+
+<h2>ワーカー</h2>
+ワーカー状態: {{ .workerAvailable }}
+{{ if .workerAvailable }}
+    <form method="post" action="/worker_pause">
+        <p><input type="submit" value="worker 停止"></p>
+    </form>
+{{ else }}
+    <form method="post" action="/worker_restart">
+        <p><input type="submit" value="worker 再開"></p>
+    </form>
 {{ end }}
 
 </body>

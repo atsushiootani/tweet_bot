@@ -28,6 +28,7 @@ func main() {
 			"tweets": tweets,
 			"needsToTweets": needsToTweets,
 			"needsToTweetsCount": len(needsToTweets),
+			"workerAvailable": workerAvailable,
 		})
 	})
 
@@ -103,17 +104,30 @@ func main() {
 		ctx.Redirect(302, "/")
 	})
 
+	router.POST("/worker_pause", func(ctx *gin.Context) {
+		workerAvailable = false
+		ctx.Redirect(302, "/")
+	})
+
+	router.POST("/worker_restart", func(ctx *gin.Context) {
+		workerAvailable = true
+		ctx.Redirect(302, "/")
+	})
+
 	router.Run()
 }
 
 // 定時ワーカー
 const workerInterval = 10 * time.Second
+var workerAvailable = true
 
 func worker() {
 	for {
-		fmt.Println("worker process at ", time.Now().Format(time.RFC3339))
+		if workerAvailable {
+			fmt.Println("worker process at ", time.Now().Format(time.RFC3339))
 
-		tweet.TweetNowAll(time.Now())
+			tweet.TweetNowAll(time.Now())
+		}
 
 		time.Sleep(workerInterval)
 	}
