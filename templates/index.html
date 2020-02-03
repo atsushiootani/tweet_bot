@@ -24,5 +24,25 @@
         </tr>
     {{end}}
 </table>
+
+<h2>今からツイートするもの</h2>
+
+{{ if gt .needsToTweetsCount 0 }}
+    <table border="1">
+        <tr><th>id</th><th>text</th><th>ツイート日時</th><th>status</th><th>編集</th><th>削除</th></tr>
+        {{ range .needsToTweets }}
+            <tr><td>{{.ID}}</td><td>{{.Text}}  ({{.TextLength}}文字)</td><td>{{.TweetAtString}}</td><td>{{.Status}}</td>
+                <td><label><a href="/detail/{{.ID}}">編集</a></label></td>
+                <td><label><a href="/delete_check/{{.ID}}">削除</a></label></td>
+            </tr>
+        {{end}}
+    </table>
+    <form method="post" action="/do_tweet">
+        <p><input type="submit" value="ツイートする！"></p>
+    </form>
+{{ else }}
+    今ツイートできるものはありません
+{{ end }}
+
 </body>
 </html>

@@ -5,6 +5,7 @@ import (
 	"./app/infrastructure"
 	"github.com/gin-gonic/gin"
 	"strconv"
+	"time"
 )
 
 func main() {
@@ -19,8 +20,11 @@ func main() {
 
 	router.GET("/", func(ctx *gin.Context) {
 		tweets := tweet.All()
+		needsToTweets := tweet.GetNeedsToTweets(time.Now())
 		ctx.HTML(200, "index.html", gin.H{
 			"tweets": tweets,
+			"needsToTweets": needsToTweets,
+			"needsToTweetsCount": len(needsToTweets),
 		})
 	})
 
@@ -88,6 +92,11 @@ func main() {
 			panic("ERROR")
 		}
 		tweet.Delete(id)
+		ctx.Redirect(302, "/")
+	})
+
+	router.POST("/do_tweet", func(ctx *gin.Context) {
+		tweet.TweetNowAll(time.Now())
 		ctx.Redirect(302, "/")
 	})
 

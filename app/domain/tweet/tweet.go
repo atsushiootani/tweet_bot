@@ -62,7 +62,7 @@ func All() (results []*Tweet) {
 	db := infrastructure.DbOpenConnection()
 	defer db.Close()
 
-	db.Find(&results).Order("id asc")
+	db.Order("tweet_at asc").Find(&results)
 	return
 }
 
@@ -73,6 +73,24 @@ func Get(id int) *Tweet {
 	var result Tweet
 	db.First(&result, id)
 	return &result
+}
+
+// 今ツイートすべきもの一覧
+func GetNeedsToTweets(now time.Time) (results []*Tweet) {
+	db := infrastructure.DbOpenConnection()
+	defer db.Close()
+
+	db.Where("status = ? AND tweet_at < ?", New, now).Find(&results)
+	return
+}
+
+// 今ツイートすべきものをツイート
+func TweetNowAll(now time.Time) {
+	tweets := GetNeedsToTweets(now)
+
+	for _, tweet := range tweets {
+		tweet.DoTweet()
+	}
 }
 
 const dateFormat = "2006/01/02 15:04:05"
@@ -117,8 +135,13 @@ func (tweet *Tweet) Save() bool{
 
 // ツイート実行
 func (tweet *Tweet) DoTweet() bool {
+
+	// TODO: ツイート実行
 	fmt.Println(tweet.Text)
+
 	tweet.Status = Done
+	tweet.Save()
+
 	return true
 }
 
