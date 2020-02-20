@@ -1,6 +1,7 @@
 package tweet
 
 import (
+	"../../../lib/twitter"
 	"../../infrastructure"
 	"fmt"
 	"github.com/Songmu/go-httpdate"
@@ -137,6 +138,7 @@ func (tweet *Tweet) Save() bool{
 func (tweet *Tweet) DoTweet() bool {
 
 	// TODO: ツイート実行
+	twitter.Tweet(tweet.Text)
 	fmt.Println(tweet.Text)
 
 	tweet.Status = Done

@@ -16,3 +16,11 @@
 
 # sqlite
 **/*.sqlite3
+
+# env
+**/*.env
+
+# local
+**/secret.go
+**/*.secret.*
+
